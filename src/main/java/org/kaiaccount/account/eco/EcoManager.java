@@ -2,6 +2,7 @@ package org.kaiaccount.account.eco;
 
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterfaceManager;
+import org.kaiaccount.account.eco.currency.EcoCurrency;
 import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.currency.ToCurrency;
 import org.kaiaccount.account.inter.type.bank.player.ToBankAccount;
@@ -13,9 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
 public class EcoManager implements AccountInterfaceManager {
-
-	private final Collection<ToCurrency> toCurrencies = new LinkedTransferQueue<>();
-	private final Collection<ToBankAccount> toBankAccount = new LinkedTransferQueue<>();
 	private final Collection<Currency> currencies = new LinkedTransferQueue<>();
 	private final Collection<PlayerAccount> playerAccounts = new LinkedBlockingQueue<>();
 
@@ -26,12 +24,12 @@ public class EcoManager implements AccountInterfaceManager {
 
 	@Override
 	public Collection<ToCurrency> getToCurrencies() {
-		return Collections.unmodifiableCollection(this.toCurrencies);
+		return Collections.singleton(EcoCurrency::new);
 	}
 
 	@Override
 	public Collection<ToBankAccount> getToBankAccount() {
-		return Collections.unmodifiableCollection(this.toBankAccount);
+		return Collections.emptySet();
 	}
 
 	@Override

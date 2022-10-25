@@ -1,0 +1,23 @@
+name: EcoTools
+version: 0.0.1-Pre
+api-version: 1.15
+main: org.kaiaccount.account.eco.EcoToolPlugin
+commands:
+  currency:
+    description: All commands to do with currencies
+    usage: /currency <command>
+  balance:
+    description: View your currencies
+    usage: /balance [player]
+    aliases: [ bal, balance ]
+  ecotools:
+    description: All generic commands for eco tools
+    usage: /ecotools <command>
+  exchange:
+    description: Exchange one currency to another
+    usage: /exchange <from currency> <to currency> <amount to exchange>
+  pay:
+    description: Pay another account money
+    usage: /pay [account type] <account id> <currency> <amount> [reason]
+    aliases:
+      - transfer
