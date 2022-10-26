@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.github.EcoToolBox</groupId>
             <artifactId>AccountInterface</artifactId>
-            <version>main-SNAPSHOT</version>
+            <version>b67fca8cd9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
