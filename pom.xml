@@ -56,7 +56,7 @@
         <dependency>
             <groupId>com.github.mosemister</groupId>
             <artifactId>BukkitCommandSystem</artifactId>
-            <version>1.13</version>
+            <version>master-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
