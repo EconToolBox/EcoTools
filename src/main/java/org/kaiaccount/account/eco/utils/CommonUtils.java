@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 
-public class CommonUtils {
+public final class CommonUtils {
 
 	public static BigDecimal calculate(@NotNull Iterator<BigDecimal> bigDecimals,
 			@NotNull BiFunction<BigDecimal, BigDecimal, BigDecimal> function) {
@@ -22,5 +22,9 @@ public class CommonUtils {
 
 	public static BigDecimal sumOf(@NotNull Iterator<BigDecimal> bigDecimals) {
 		return calculate(bigDecimals, BigDecimal::add);
+	}
+
+	private CommonUtils(){
+		throw new RuntimeException("Dont do that");
 	}
 }

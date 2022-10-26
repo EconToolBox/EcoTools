@@ -15,9 +15,9 @@ import java.util.Optional;
 
 public class SetDefaultCurrencyCommand implements ArgumentCommand {
 
-	public static final ExactArgument SET = new ExactArgument("set");
-	public static final ExactArgument DEFAULT = new ExactArgument("default");
-	public static final CurrencyArgument CURRENCY = new CurrencyArgument("currency");
+	public static final CommandArgument<String> SET = new ExactArgument("set");
+	public static final CommandArgument<String> DEFAULT = new ExactArgument("default");
+	public static final CommandArgument<Currency<?>> CURRENCY = new CurrencyArgument("currency");
 
 	@Override
 	public @NotNull List<CommandArgument<?>> getArguments() {
@@ -36,8 +36,8 @@ public class SetDefaultCurrencyCommand implements ArgumentCommand {
 
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
-		Currency newDefault = commandContext.getArgument(this, CURRENCY);
-		Currency previousDefault = AccountInterface.getGlobal().getDefaultCurrency();
+		Currency<?> newDefault = commandContext.getArgument(this, CURRENCY);
+		Currency<?> previousDefault = AccountInterface.getGlobal().getDefaultCurrency();
 		newDefault.setDefault(true);
 		previousDefault.setDefault(false);
 		commandContext.getSource()

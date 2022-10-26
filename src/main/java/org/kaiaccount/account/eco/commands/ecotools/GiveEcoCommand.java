@@ -24,10 +24,10 @@ import java.util.Optional;
 
 public class GiveEcoCommand implements ArgumentCommand {
 
-	public static final ExactArgument GIVE = new ExactArgument("give");
-	public static final UserArgument USER = new UserArgument("user", u -> true);
-	public static final CurrencyArgument CURRENCY = new CurrencyArgument("currency");
-	public static final DoubleArgument AMOUNT = new DoubleArgument("amount");
+	public static final CommandArgument<String> GIVE = new ExactArgument("give");
+	public static final CommandArgument<OfflinePlayer> USER = new UserArgument("user", u -> true);
+	public static final CommandArgument<Currency<?>> CURRENCY = new CurrencyArgument("currency");
+	public static final CommandArgument<Double> AMOUNT = new DoubleArgument("amount");
 
 	@Override
 	public @NotNull List<CommandArgument<?>> getArguments() {
@@ -47,8 +47,8 @@ public class GiveEcoCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		OfflinePlayer player = commandContext.getArgument(this, USER);
-		PlayerAccount account = AccountInterface.getGlobal().getPlayerAccount(player);
-		Currency currency = commandContext.getArgument(this, CURRENCY);
+		PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+		Currency<?> currency = commandContext.getArgument(this, CURRENCY);
 		double amount = commandContext.getArgument(this, AMOUNT);
 
 		account.deposit(new PaymentBuilder().setAmount(amount).setCurrency(currency).build(EcoToolPlugin.getPlugin()))

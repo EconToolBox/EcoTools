@@ -24,22 +24,22 @@ import java.util.Optional;
 
 public class ExchangeCommand implements ArgumentCommand {
 
-	public static final CurrencyArgument FROM = new CurrencyArgument("from", (context, argument) -> {
+	public static final CommandArgument<Currency<?>> FROM = new CurrencyArgument("from", (context, argument) -> {
 		if (!(context.getSource() instanceof Player player)) {
 			return Collections.emptySet();
 		}
-		PlayerAccount account = AccountInterface.getGlobal().getPlayerAccount(player);
+		PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
 		return account.getBalances().keySet().parallelStream().filter(c -> c.getWorth().isPresent()).toList();
 	});
 
-	public static final CurrencyArgument TO =
+	public static final CommandArgument<Currency<?>> TO =
 			new CurrencyArgument("to", (context, argument) -> AccountInterface.getGlobal()
 					.getCurrencies()
 					.parallelStream()
 					.filter(c -> c.getWorth().isPresent())
 					.toList());
 
-	public static final DoubleArgument AMOUNT = new DoubleArgument("amount");
+	public static final CommandArgument<Double> AMOUNT = new DoubleArgument("amount");
 
 	@Override
 	public @NotNull List<CommandArgument<?>> getArguments() {
@@ -69,19 +69,19 @@ public class ExchangeCommand implements ArgumentCommand {
 		if (!(commandContext.getSource() instanceof OfflinePlayer)) {
 			return false;
 		}
-		Currency from = commandContext.getArgument(this, FROM);
+		Currency<?> from = commandContext.getArgument(this, FROM);
 		if (from.getWorth().isEmpty()) {
 			commandContext.getSource().sendMessage(from.getKeyName() + " has no exchange value");
 			return false;
 		}
-		Currency to = commandContext.getArgument(this, TO);
+		Currency<?> to = commandContext.getArgument(this, TO);
 		if (to.getWorth().isEmpty()) {
 			commandContext.getSource().sendMessage(to.getKeyName() + " has no exchange value");
 			return false;
 		}
 		double amount = commandContext.getArgument(this, AMOUNT);
 
-		PlayerAccount account =
+		PlayerAccount<?> account =
 				AccountInterface.getGlobal().getPlayerAccount((OfflinePlayer) commandContext.getSource());
 		BigDecimal previousFrom = account.getBalance(from);
 		BigDecimal previousTo = account.getBalance(to);

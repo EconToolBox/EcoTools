@@ -16,10 +16,6 @@ public enum Permissions {
 	private final @NotNull String permissionNode;
 	private final boolean onByDefault;
 
-	Permissions(@NotNull String permissionNode) {
-		this(permissionNode, false);
-	}
-
 	Permissions(@NotNull String permissionNode, boolean onByDefault) {
 		this.onByDefault = onByDefault;
 		this.permissionNode = permissionNode;

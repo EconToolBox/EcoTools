@@ -54,7 +54,7 @@ public class AddCurrencyCommand implements ArgumentCommand {
 		String shortDisplay = commandContext.getArgument(this, SHORT_DISPLAY);
 		Double worth = commandContext.getArgument(this, WORTH);
 		boolean isDefault = AccountInterface.getGlobal().getCurrencies().isEmpty();
-		Currency currency =
+		Currency<?> currency =
 				new CurrencyBuilder().setName(name)
 						.setPlugin(EcoToolPlugin.getPlugin())
 						.setSymbol(symbol)
@@ -65,7 +65,7 @@ public class AddCurrencyCommand implements ArgumentCommand {
 						.setDefault(isDefault)
 						.build();
 
-		Optional<Currency> alreadyRegistered =
+		Optional<Currency<?>> alreadyRegistered =
 				AccountInterface.getGlobal().getCurrencies().parallelStream().filter(search -> {
 					if (search.getKeyName().equalsIgnoreCase(name) && search.getPlugin()
 							.equals(EcoToolPlugin.getPlugin())) {

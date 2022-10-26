@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class InfoCommand implements ArgumentCommand {
 
-	public static final ExactArgument INFO = new ExactArgument("info");
+	public static final CommandArgument<String> INFO = new ExactArgument("info");
 
 	@Override
 	public @NotNull List<CommandArgument<?>> getArguments() {
@@ -43,7 +43,7 @@ public class InfoCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		CommandSender sender = commandContext.getSource();
-		Collection<Currency> currencies = AccountInterface.getGlobal().getCurrencies();
+		Collection<Currency<?>> currencies = AccountInterface.getGlobal().getCurrencies();
 		RegisteredListener[] transactionEventHooks = TransactionEvent.getHandlerList().getRegisteredListeners();
 		RegisteredListener[] transactionCompletedHooks =
 				TransactionCompletedEvent.getHandlerList().getRegisteredListeners();
@@ -56,7 +56,7 @@ public class InfoCommand implements ArgumentCommand {
 		sender.sendMessage("Currencies: " + currencies.size());
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("| Plugin | Key name | Symbol |");
-			for (Currency currency : currencies) {
+			for (Currency<?> currency : currencies) {
 				sender.sendMessage("| "
 						+ currency.getPlugin().getName()
 						+ " | "

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class CheckBalanceCommand implements ArgumentCommand {
 
-	public static final OptionalArgument<OfflinePlayer> USER = new OptionalArgument<>(new PermissionOrArgument<>(
+	public static final CommandArgument<OfflinePlayer> USER = new OptionalArgument<>(new PermissionOrArgument<>(
 			"user",
 			(sender) -> sender.hasPermission(Permissions.BALANCE_OTHER.getPermissionNode()),
 			new UserArgument("user", (user) -> true)));
@@ -53,11 +53,11 @@ public class CheckBalanceCommand implements ArgumentCommand {
 			}
 			player = (OfflinePlayer) commandContext.getSource();
 		}
-		Map<Currency, BigDecimal> balances = AccountInterface.getGlobal().getPlayerAccount(player).getBalances();
+		Map<Currency<?>, BigDecimal> balances = AccountInterface.getGlobal().getPlayerAccount(player).getBalances();
 		balances.forEach(((currency, balance) -> commandContext.getSource()
 				.sendMessage("  " + currency.formatSymbol(balance))));
 
-		Currency defaultCurrency = AccountInterface.getGlobal().getDefaultCurrency();
+		Currency<?> defaultCurrency = AccountInterface.getGlobal().getDefaultCurrency();
 		if (defaultCurrency.getWorth().isPresent()) {
 			Collection<BigDecimal> collection = balances.entrySet()
 					.parallelStream()

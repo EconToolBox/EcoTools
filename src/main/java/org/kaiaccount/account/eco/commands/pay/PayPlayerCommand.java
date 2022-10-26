@@ -31,17 +31,18 @@ import java.util.Optional;
 
 public class PayPlayerCommand implements ArgumentCommand {
 
-	public static final ExactArgument PLAYER = new ExactArgument("player");
-	public static final UserArgument USER = new UserArgument("user", (player) -> true);
-	public static final CurrencyArgument CURRENCY = new CurrencyArgument("currency", (context, argument) -> {
-		if (!(context.getSource() instanceof Player player)) {
-			return Collections.emptySet();
-		}
-		PlayerAccount account = AccountInterface.getGlobal().getPlayerAccount(player);
-		return account.getBalances().keySet();
-	});
-	public static final DoubleArgument AMOUNT = new DoubleArgument("amount");
-	public static final OptionalArgument<List<String>> REASON =
+	public static final CommandArgument<String> PLAYER = new ExactArgument("player");
+	public static final CommandArgument<OfflinePlayer> USER = new UserArgument("user", (player) -> true);
+	public static final CommandArgument<Currency<?>> CURRENCY =
+			new CurrencyArgument("currency", (context, argument) -> {
+				if (!(context.getSource() instanceof Player player)) {
+					return Collections.emptySet();
+				}
+				PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+				return account.getBalances().keySet();
+			});
+	public static final CommandArgument<Double> AMOUNT = new DoubleArgument("amount");
+	public static final CommandArgument<List<String>> REASON =
 			new OptionalArgument<>(new RemainingArgument<>(new StringCodeArguments(new StringArgument("reason"))),
 					Collections.emptyList());
 
@@ -71,7 +72,7 @@ public class PayPlayerCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		OfflinePlayer toUser = commandContext.getArgument(this, USER);
-		Currency currency = commandContext.getArgument(this, CURRENCY);
+		Currency<?> currency = commandContext.getArgument(this, CURRENCY);
 		double payment = commandContext.getArgument(this, AMOUNT);
 		String reason = String.join(" ", commandContext.getArgument(this, REASON));
 		if (!(commandContext.getSource() instanceof Player player)) {
@@ -83,7 +84,7 @@ public class PayPlayerCommand implements ArgumentCommand {
 			return false;
 		}
 
-		PlayerAccount toPlayer = AccountInterface.getGlobal().getPlayerAccount(toUser);
+		PlayerAccount<?> toPlayer = AccountInterface.getGlobal().getPlayerAccount(toUser);
 		Payment paymentResult =
 				new PaymentBuilder().setAmount(payment).setCurrency(currency).setFrom(account).setReason(reason).build(
 						EcoToolPlugin.getPlugin());
