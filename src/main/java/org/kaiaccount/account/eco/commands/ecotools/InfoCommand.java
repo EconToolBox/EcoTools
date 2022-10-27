@@ -4,6 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
@@ -43,15 +44,19 @@ public class InfoCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		CommandSender sender = commandContext.getSource();
-		Collection<Currency<?>> currencies = AccountInterface.getGlobal().getCurrencies();
+		Collection<Currency<?>> currencies = AccountInterface.getManager().getCurrencies();
 		RegisteredListener[] transactionEventHooks = TransactionEvent.getHandlerList().getRegisteredListeners();
 		RegisteredListener[] transactionCompletedHooks =
 				TransactionCompletedEvent.getHandlerList().getRegisteredListeners();
+		Plugin plugin = Bukkit.getPluginManager().getPlugin("Vault");
+		boolean isVaultInstalled = false;
+		if (plugin != null) {
+			isVaultInstalled = plugin instanceof VaultPluginWrapper;
+		}
 
 		sender.sendMessage("|===|Info|===|");
 		sender.sendMessage("Version: " + EcoToolPlugin.getPlugin().getDescription().getVersion());
-		sender.sendMessage("Vault plugin enabled: " + (AccountInterface.getGlobal()
-				.getVaultPlugin() instanceof VaultPluginWrapper));
+		sender.sendMessage("Vault plugin enabled: " + isVaultInstalled);
 		sender.sendMessage("Vault service enabled: " + Bukkit.getServicesManager().isProvidedFor(Economy.class));
 		sender.sendMessage("Currencies: " + currencies.size());
 		if (!(sender instanceof Player)) {

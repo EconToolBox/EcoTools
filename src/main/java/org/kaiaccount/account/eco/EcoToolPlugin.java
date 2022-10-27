@@ -1,11 +1,14 @@
 package org.kaiaccount.account.eco;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
+import org.kaiaccount.AccountInterfaceManager;
 import org.kaiaccount.account.eco.account.EcoPlayerAccount;
 import org.kaiaccount.account.eco.commands.BukkitCommands;
 import org.kaiaccount.account.eco.io.EcoSerializers;
@@ -32,7 +35,8 @@ public class EcoToolPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		AccountInterface.setGlobal(new EcoManager());
+		Bukkit.getServicesManager()
+				.register(AccountInterfaceManager.class, new EcoManager(), this, ServicePriority.Normal);
 		Plugin vaultPlugin = this;
 		try {
 			vaultPlugin = VaultEmulationUtils.loadVault();
@@ -70,7 +74,7 @@ public class EcoToolPlugin extends JavaPlugin {
 	}
 
 	private void loadBankAccounts() {
-		for (PlayerAccount<?> account : AccountInterface.getGlobal().getPlayerAccounts()) {
+		for (PlayerAccount<?> account : AccountInterface.getManager().getPlayerAccounts()) {
 			File folder = new File("plugins/eco/players/" + account.getPlayer().getUniqueId() + "/");
 			load(folder, EcoSerializers.BANK, account::registerBank);
 		}
@@ -79,7 +83,7 @@ public class EcoToolPlugin extends JavaPlugin {
 	private boolean loadPlayerAccounts() {
 		File folder = new File("plugins/eco/players/");
 		return load(folder, EcoSerializers.PLAYER,
-				(player) -> AccountInterface.getGlobal().registerPlayerAccount(player));
+				(player) -> AccountInterface.getManager().registerPlayerAccount(player));
 	}
 
 	public EcoPlayerAccount loadPlayerAccount(@NotNull UUID player) {
@@ -93,7 +97,7 @@ public class EcoToolPlugin extends JavaPlugin {
 
 	private boolean loadCurrencies() {
 		File folder = new File("plugins/eco/currencies/" + this.getName() + "/");
-		return load(folder, EcoSerializers.CURRENCY, (c) -> AccountInterface.getGlobal().registerCurrency(c));
+		return load(folder, EcoSerializers.CURRENCY, (c) -> AccountInterface.getManager().registerCurrency(c));
 	}
 
 	@SuppressWarnings("SameParameterValue")

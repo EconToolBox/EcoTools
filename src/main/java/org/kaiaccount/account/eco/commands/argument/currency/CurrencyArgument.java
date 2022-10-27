@@ -22,7 +22,7 @@ public class CurrencyArgument implements CommandArgument<Currency<?>> {
 			currencies;
 
 	public CurrencyArgument(@NotNull String id) {
-		this(id, (c, a) -> AccountInterface.getGlobal().getCurrencies());
+		this(id, (c, a) -> AccountInterface.getManager().getCurrencies());
 	}
 
 	public CurrencyArgument(@NotNull String id, @NotNull Collection<Currency<?>> currencies) {

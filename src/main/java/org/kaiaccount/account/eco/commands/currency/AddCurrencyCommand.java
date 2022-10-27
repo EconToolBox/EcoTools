@@ -53,7 +53,7 @@ public class AddCurrencyCommand implements ArgumentCommand {
 		String multiDisplay = commandContext.getArgument(this, MULTI_DISPLAY);
 		String shortDisplay = commandContext.getArgument(this, SHORT_DISPLAY);
 		Double worth = commandContext.getArgument(this, WORTH);
-		boolean isDefault = AccountInterface.getGlobal().getCurrencies().isEmpty();
+		boolean isDefault = AccountInterface.getManager().getCurrencies().isEmpty();
 		Currency<?> currency =
 				new CurrencyBuilder().setName(name)
 						.setPlugin(EcoToolPlugin.getPlugin())
@@ -66,7 +66,7 @@ public class AddCurrencyCommand implements ArgumentCommand {
 						.build();
 
 		Optional<Currency<?>> alreadyRegistered =
-				AccountInterface.getGlobal().getCurrencies().parallelStream().filter(search -> {
+				AccountInterface.getManager().getCurrencies().parallelStream().filter(search -> {
 					if (search.getKeyName().equalsIgnoreCase(name) && search.getPlugin()
 							.equals(EcoToolPlugin.getPlugin())) {
 						return true;
@@ -85,7 +85,7 @@ public class AddCurrencyCommand implements ArgumentCommand {
 		commandContext.getSource().sendMessage(currency.formatSymbol(BigDecimal.ONE));
 		commandContext.getSource().sendMessage(currency.formatName(BigDecimal.ONE));
 		commandContext.getSource().sendMessage(currency.formatName(BigDecimal.TEN));
-		AccountInterface.getGlobal().registerCurrency(currency);
+		AccountInterface.getManager().registerCurrency(currency);
 		return true;
 	}
 }

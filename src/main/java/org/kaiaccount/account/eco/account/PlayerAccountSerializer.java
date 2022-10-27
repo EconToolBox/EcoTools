@@ -28,7 +28,7 @@ public class PlayerAccountSerializer implements Serializer<EcoPlayerAccount> {
 	@Override
 	public EcoPlayerAccount deserialize(@NotNull YamlConfiguration configuration) throws IOException {
 		Map<Currency<?>, BigDecimal> amount =
-				AccountInterface.getGlobal()
+				AccountInterface.getManager()
 						.getCurrencies()
 						.parallelStream()
 						.map(currency -> {

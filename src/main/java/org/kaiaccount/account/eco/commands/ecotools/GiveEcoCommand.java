@@ -47,7 +47,7 @@ public class GiveEcoCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		OfflinePlayer player = commandContext.getArgument(this, USER);
-		PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+		PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
 		Currency<?> currency = commandContext.getArgument(this, CURRENCY);
 		double amount = commandContext.getArgument(this, AMOUNT);
 

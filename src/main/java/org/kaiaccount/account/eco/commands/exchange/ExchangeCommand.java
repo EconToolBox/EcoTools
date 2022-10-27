@@ -28,12 +28,12 @@ public class ExchangeCommand implements ArgumentCommand {
 		if (!(context.getSource() instanceof Player player)) {
 			return Collections.emptySet();
 		}
-		PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+		PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
 		return account.getBalances().keySet().parallelStream().filter(c -> c.getWorth().isPresent()).toList();
 	});
 
 	public static final CommandArgument<Currency<?>> TO =
-			new CurrencyArgument("to", (context, argument) -> AccountInterface.getGlobal()
+			new CurrencyArgument("to", (context, argument) -> AccountInterface.getManager()
 					.getCurrencies()
 					.parallelStream()
 					.filter(c -> c.getWorth().isPresent())
@@ -82,7 +82,7 @@ public class ExchangeCommand implements ArgumentCommand {
 		double amount = commandContext.getArgument(this, AMOUNT);
 
 		PlayerAccount<?> account =
-				AccountInterface.getGlobal().getPlayerAccount((OfflinePlayer) commandContext.getSource());
+				AccountInterface.getManager().getPlayerAccount((OfflinePlayer) commandContext.getSource());
 		BigDecimal previousFrom = account.getBalance(from);
 		BigDecimal previousTo = account.getBalance(to);
 

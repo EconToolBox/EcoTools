@@ -95,7 +95,7 @@ public class BankSerializer implements Serializer<EcoBankAccount> {
 				}
 				for (String currencyName : currencyNameSection.getKeys(false)) {
 					double amount = currencyNameSection.getDouble(currencyName);
-					Optional<Currency<?>> opCurrency = AccountInterface.getGlobal()
+					Optional<Currency<?>> opCurrency = AccountInterface.getManager()
 							.getCurrencies()
 							.parallelStream()
 							.filter(cur -> cur.getPlugin().getName().equals(pluginName))
@@ -115,7 +115,7 @@ public class BankSerializer implements Serializer<EcoBankAccount> {
 				}
 			}
 		}
-		PlayerAccount<?> owner = AccountInterface.getGlobal().getPlayerAccount(bankOwnerId);
+		PlayerAccount<?> owner = AccountInterface.getManager().getPlayerAccount(bankOwnerId);
 		return new EcoBankAccount(new PlayerBankAccountBuilder().setAccount(owner)
 				.setName(bankName)
 				.setAccountHolders(accounts)

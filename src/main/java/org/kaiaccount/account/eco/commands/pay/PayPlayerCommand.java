@@ -38,7 +38,7 @@ public class PayPlayerCommand implements ArgumentCommand {
 				if (!(context.getSource() instanceof Player player)) {
 					return Collections.emptySet();
 				}
-				PlayerAccount<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+				PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
 				return account.getBalances().keySet();
 			});
 	public static final CommandArgument<Double> AMOUNT = new DoubleArgument("amount");
@@ -78,13 +78,13 @@ public class PayPlayerCommand implements ArgumentCommand {
 		if (!(commandContext.getSource() instanceof Player player)) {
 			return false;
 		}
-		Account<?> account = AccountInterface.getGlobal().getPlayerAccount(player);
+		Account<?> account = AccountInterface.getManager().getPlayerAccount(player);
 		if (payment <= 0) {
 			commandContext.getSource().sendMessage("Payment requires more then 0");
 			return false;
 		}
 
-		PlayerAccount<?> toPlayer = AccountInterface.getGlobal().getPlayerAccount(toUser);
+		PlayerAccount<?> toPlayer = AccountInterface.getManager().getPlayerAccount(toUser);
 		Payment paymentResult =
 				new PaymentBuilder().setAmount(payment).setCurrency(currency).setFrom(account).setReason(reason).build(
 						EcoToolPlugin.getPlugin());

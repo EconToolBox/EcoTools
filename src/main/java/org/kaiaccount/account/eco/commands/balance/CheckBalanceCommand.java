@@ -53,11 +53,11 @@ public class CheckBalanceCommand implements ArgumentCommand {
 			}
 			player = (OfflinePlayer) commandContext.getSource();
 		}
-		Map<Currency<?>, BigDecimal> balances = AccountInterface.getGlobal().getPlayerAccount(player).getBalances();
+		Map<Currency<?>, BigDecimal> balances = AccountInterface.getManager().getPlayerAccount(player).getBalances();
 		balances.forEach(((currency, balance) -> commandContext.getSource()
 				.sendMessage("  " + currency.formatSymbol(balance))));
 
-		Currency<?> defaultCurrency = AccountInterface.getGlobal().getDefaultCurrency();
+		Currency<?> defaultCurrency = AccountInterface.getManager().getDefaultCurrency();
 		if (defaultCurrency.getWorth().isPresent()) {
 			Collection<BigDecimal> collection = balances.entrySet()
 					.parallelStream()

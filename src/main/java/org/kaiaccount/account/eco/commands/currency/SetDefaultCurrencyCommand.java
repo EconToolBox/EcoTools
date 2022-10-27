@@ -37,7 +37,7 @@ public class SetDefaultCurrencyCommand implements ArgumentCommand {
 	@Override
 	public boolean run(CommandContext commandContext, String... args) {
 		Currency<?> newDefault = commandContext.getArgument(this, CURRENCY);
-		Currency<?> previousDefault = AccountInterface.getGlobal().getDefaultCurrency();
+		Currency<?> previousDefault = AccountInterface.getManager().getDefaultCurrency();
 		newDefault.setDefault(true);
 		previousDefault.setDefault(false);
 		commandContext.getSource()

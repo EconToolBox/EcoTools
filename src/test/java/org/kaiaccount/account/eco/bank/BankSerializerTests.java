@@ -30,18 +30,19 @@ public class BankSerializerTests {
 
 	private final FakeGlobalManager manager = new FakeGlobalManager();
 	private MockedStatic<Bukkit> bukkitMocked;
+	private MockedStatic<AccountInterface> accountMocked;
 
 	@BeforeEach
 	public void setup() {
 		bukkitMocked = Mockito.mockStatic(Bukkit.class);
-		if (!AccountInterface.isReady()) {
-			AccountInterface.setGlobal(manager);
-		}
+		accountMocked = Mockito.mockStatic(AccountInterface.class);
+		accountMocked.when(AccountInterface::getManager).thenReturn(manager);
 	}
 
 	@AfterEach
 	public void close() {
 		bukkitMocked.close();
+		accountMocked.close();
 	}
 
 	@Test

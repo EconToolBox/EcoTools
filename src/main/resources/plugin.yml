@@ -2,6 +2,8 @@ name: EcoTools
 version: 0.0.1-Pre
 api-version: 1.15
 main: org.kaiaccount.account.eco.EcoToolPlugin
+depend:
+  - AccountInterface
 commands:
   currency:
     description: All commands to do with currencies
