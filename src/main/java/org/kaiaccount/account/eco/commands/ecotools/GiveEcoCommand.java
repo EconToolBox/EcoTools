@@ -9,7 +9,7 @@ import org.kaiaccount.account.eco.commands.argument.currency.CurrencyArgument;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.transfer.payment.PaymentBuilder;
-import org.kaiaccount.account.inter.transfer.result.SuccessfulTransactionResult;
+import org.kaiaccount.account.inter.transfer.result.successful.SuccessfulTransactionResult;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
@@ -50,19 +50,20 @@ public class GiveEcoCommand implements ArgumentCommand {
 		PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
 		Currency<?> currency = commandContext.getArgument(this, CURRENCY);
 		double amount = commandContext.getArgument(this, AMOUNT);
-
 		account.deposit(new PaymentBuilder().setAmount(amount).setCurrency(currency).build(EcoToolPlugin.getPlugin()))
 				.thenAccept(result -> {
-					if (result instanceof SuccessfulTransactionResult) {
-						commandContext.getSource().sendMessage("Money have arrived");
-						if (player.isOnline()) {
-							Player playerOnline = player.getPlayer();
-							if (playerOnline == null) {
-								return;
-							}
-							playerOnline.sendMessage("Received " + currency.formatSymbol(BigDecimal.valueOf(amount)));
-						}
+					if (!(result instanceof SuccessfulTransactionResult)) {
+						return;
 					}
+					commandContext.getSource().sendMessage("Money have arrived");
+					if (!player.isOnline()) {
+						return;
+					}
+					Player playerOnline = player.getPlayer();
+					if (playerOnline == null) {
+						return;
+					}
+					playerOnline.sendMessage("Received " + currency.formatSymbol(BigDecimal.valueOf(amount)));
 				});
 		commandContext
 				.getSource()

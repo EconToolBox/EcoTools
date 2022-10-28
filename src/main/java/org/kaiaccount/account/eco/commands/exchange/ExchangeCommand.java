@@ -10,6 +10,7 @@ import org.kaiaccount.account.eco.commands.argument.currency.CurrencyArgument;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.transfer.payment.PaymentBuilder;
+import org.kaiaccount.account.inter.type.player.AbstractPlayerAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
@@ -83,6 +84,10 @@ public class ExchangeCommand implements ArgumentCommand {
 
 		PlayerAccount<?> account =
 				AccountInterface.getManager().getPlayerAccount((OfflinePlayer) commandContext.getSource());
+		if (!(account instanceof AbstractPlayerAccount<?> playerAccount)) {
+			commandContext.getSource().sendMessage("Could not exchange: This error should be impossible to get to");
+			return false;
+		}
 		BigDecimal previousFrom = account.getBalance(from);
 		BigDecimal previousTo = account.getBalance(to);
 
@@ -93,7 +98,7 @@ public class ExchangeCommand implements ArgumentCommand {
 		BigDecimal newFrom = previousFrom.subtract(BigDecimal.valueOf(amount));
 		BigDecimal newTo = previousTo.add(exchange);
 
-		account.multipleTransaction(a -> a.set(new PaymentBuilder()
+		playerAccount.multipleTransaction(a -> a.set(new PaymentBuilder()
 								.setAmount(newFrom)
 								.setCurrency(from)
 								.setReason("Exchange")

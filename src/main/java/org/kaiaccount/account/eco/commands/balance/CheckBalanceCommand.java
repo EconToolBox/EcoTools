@@ -3,6 +3,7 @@ package org.kaiaccount.account.eco.commands.balance;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
+import org.kaiaccount.account.eco.message.Messages;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.eco.utils.CommonUtils;
 import org.kaiaccount.account.inter.currency.Currency;
@@ -57,7 +58,13 @@ public class CheckBalanceCommand implements ArgumentCommand {
 		balances.forEach(((currency, balance) -> commandContext.getSource()
 				.sendMessage("  " + currency.formatSymbol(balance))));
 
-		Currency<?> defaultCurrency = AccountInterface.getManager().getDefaultCurrency();
+		Currency<?> defaultCurrency;
+		try{
+			defaultCurrency = AccountInterface.getManager().getDefaultCurrency();
+		}catch (RuntimeException e){
+			commandContext.getSource().sendMessage("Worth cannot be calculated: " + e.getMessage());
+			return true;
+		}
 		if (defaultCurrency.getWorth().isPresent()) {
 			Collection<BigDecimal> collection = balances.entrySet()
 					.parallelStream()
@@ -69,8 +76,9 @@ public class CheckBalanceCommand implements ArgumentCommand {
 					.collect(Collectors.toSet());
 
 			BigDecimal worth = CommonUtils.sumOf(collection.iterator());
-			commandContext.getSource()
-					.sendMessage("Total Worth: " + defaultCurrency.formatSymbol(worth));
+			String message = Messages.TOTAL_WORTH.getProcessedMessage(commandContext.getSource(), worth);
+
+			commandContext.getSource().sendMessage(message);
 		}
 		return true;
 	}

@@ -10,6 +10,7 @@ import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.currency.ToCurrency;
 import org.kaiaccount.account.inter.type.bank.player.ToBankAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
+import org.kaiaccount.account.inter.type.player.PlayerAccountBuilder;
 import org.kaiaccount.account.inter.type.player.ToPlayerAccount;
 
 import java.util.Collection;
@@ -58,7 +59,12 @@ public class EcoManager implements AccountInterfaceManager {
 
 	@Override
 	public PlayerAccount<?> loadPlayerAccount(@NotNull OfflinePlayer player) {
-		PlayerAccount<?> account = EcoToolPlugin.getPlugin().loadPlayerAccount(player.getUniqueId());
+		PlayerAccount<?> account;
+		try {
+			account = EcoToolPlugin.getPlugin().loadPlayerAccount(player.getUniqueId());
+		} catch (IllegalStateException e) {
+			account = new EcoPlayerAccount(new PlayerAccountBuilder().setPlayer(player));
+		}
 		this.registerPlayerAccount(account);
 		return account;
 	}

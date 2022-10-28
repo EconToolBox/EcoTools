@@ -12,6 +12,7 @@ import org.kaiaccount.AccountInterfaceManager;
 import org.kaiaccount.account.eco.account.EcoPlayerAccount;
 import org.kaiaccount.account.eco.commands.BukkitCommands;
 import org.kaiaccount.account.eco.io.EcoSerializers;
+import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.io.Serializable;
 import org.kaiaccount.account.inter.io.Serializer;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
@@ -55,6 +56,11 @@ public class EcoToolPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		if (!AccountInterface.getManager().getCurrencies().isEmpty()) {
+			if (AccountInterface.getManager().getCurrencies().parallelStream().noneMatch(Currency::isDefault)) {
+				AccountInterface.getManager().getCurrencies().iterator().next().setDefault(true);
+			}
+		}
 		loadPlayerAccounts();
 		loadBankAccounts();
 		registerCommand("balance", BukkitCommands.BALANCE);
@@ -81,13 +87,16 @@ public class EcoToolPlugin extends JavaPlugin {
 	}
 
 	private boolean loadPlayerAccounts() {
-		File folder = new File("plugins/eco/players/");
+		File folder = new File("plugins/eco/players/" + this.getName() + "/");
 		return load(folder, EcoSerializers.PLAYER,
 				(player) -> AccountInterface.getManager().registerPlayerAccount(player));
 	}
 
-	public EcoPlayerAccount loadPlayerAccount(@NotNull UUID player) {
-		File file = new File("plugins/eco/players/" + player + ".yml");
+	public EcoPlayerAccount loadPlayerAccount(@NotNull UUID player) throws IllegalStateException {
+		File file = new File("plugins/eco/players/" + this.getName() + "/" + player + ".yml");
+		if (!file.exists()) {
+			throw new IllegalStateException("No file for player");
+		}
 		try {
 			return loadSingle(file, EcoSerializers.PLAYER);
 		} catch (IOException e) {

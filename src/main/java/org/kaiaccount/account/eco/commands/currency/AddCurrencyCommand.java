@@ -14,6 +14,7 @@ import org.mose.command.arguments.simple.number.DoubleArgument;
 import org.mose.command.arguments.simple.text.StringArgument;
 import org.mose.command.context.CommandContext;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +79,14 @@ public class AddCurrencyCommand implements ArgumentCommand {
 			commandContext.getSource().sendMessage("\t- " + alreadyRegistered.get().getSymbol());
 			commandContext.getSource().sendMessage("\t- " + alreadyRegistered.get().getPlugin().getName());
 			commandContext.getSource().sendMessage("\t- " + alreadyRegistered.get().getKeyName());
+			return true;
+		}
+
+		try {
+			currency.save();
+		} catch (IOException e) {
+			e.printStackTrace();
+			commandContext.getSource().sendMessage("A error occurred when creating currency: " + e.getMessage());
 			return true;
 		}
 

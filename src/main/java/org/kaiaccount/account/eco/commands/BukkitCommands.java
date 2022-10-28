@@ -6,7 +6,8 @@ public final class BukkitCommands {
 
 	public static final BukkitCommandWrapper BALANCE = new BukkitCommandWrapper(Commands.CHECK_BALANCE);
 	public static final BukkitCommandWrapper CURRENCY =
-			new BukkitCommandWrapper(Commands.ADD_CURRENCY, Commands.SET_DEFAULT_CURRENCY);
+			new BukkitCommandWrapper(Commands.ADD_CURRENCY, Commands.SET_DEFAULT_CURRENCY,
+					Commands.SET_EXCHANGE_CURRENCY, Commands.REMOVE_CURRENCY);
 
 	public static final BukkitCommandWrapper ECOTOOLS = new BukkitCommandWrapper(Commands.INFO, Commands.GIVE_ECO);
 	public static final BukkitCommandWrapper EXCHANGE = new BukkitCommandWrapper(Commands.EXCHANGE);

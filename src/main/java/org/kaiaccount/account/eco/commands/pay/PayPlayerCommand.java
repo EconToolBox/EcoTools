@@ -9,10 +9,14 @@ import org.kaiaccount.account.eco.EcoToolPlugin;
 import org.kaiaccount.account.eco.commands.argument.currency.CurrencyArgument;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.inter.currency.Currency;
+import org.kaiaccount.account.inter.transfer.IsolatedTransaction;
+import org.kaiaccount.account.inter.transfer.Transaction;
+import org.kaiaccount.account.inter.transfer.TransactionType;
 import org.kaiaccount.account.inter.transfer.payment.Payment;
 import org.kaiaccount.account.inter.transfer.payment.PaymentBuilder;
-import org.kaiaccount.account.inter.transfer.result.FailedTransactionResult;
+import org.kaiaccount.account.inter.transfer.result.TransactionResult;
 import org.kaiaccount.account.inter.type.Account;
+import org.kaiaccount.account.inter.type.player.AbstractPlayerAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
@@ -28,6 +32,7 @@ import org.mose.command.context.CommandContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class PayPlayerCommand implements ArgumentCommand {
 
@@ -78,45 +83,54 @@ public class PayPlayerCommand implements ArgumentCommand {
 		if (!(commandContext.getSource() instanceof Player player)) {
 			return false;
 		}
-		Account<?> account = AccountInterface.getManager().getPlayerAccount(player);
+		Account account = AccountInterface.getManager().getPlayerAccount(player);
 		if (payment <= 0) {
 			commandContext.getSource().sendMessage("Payment requires more then 0");
 			return false;
 		}
 
 		PlayerAccount<?> toPlayer = AccountInterface.getManager().getPlayerAccount(toUser);
+		if (!(toPlayer instanceof AbstractPlayerAccount<?> toPlayerAccount)) {
+			commandContext.getSource().sendMessage("Could not pay. This error should be impossible to get");
+			return false;
+		}
+		if (!(account instanceof AbstractPlayerAccount<?> toAccount)) {
+			commandContext.getSource().sendMessage("Could not pay. This error should be impossible to get");
+			return false;
+		}
 		Payment paymentResult =
 				new PaymentBuilder().setAmount(payment).setCurrency(currency).setFrom(account).setReason(reason).build(
 						EcoToolPlugin.getPlugin());
-		account.withdraw(paymentResult).thenAccept(result -> {
-			if (result instanceof FailedTransactionResult failed) {
-				player.sendMessage("Failed to complete payment: " + failed.getFailReason());
-				return;
-			}
-			toPlayer.deposit(paymentResult).thenAccept(resultTo -> {
-				if (resultTo instanceof FailedTransactionResult failed) {
-					player.sendMessage("Failed to send payment: Refunding");
-					player.sendMessage("Failed to send payment reason: " + failed.getFailReason());
-					account.deposit(new PaymentBuilder().setCurrency(currency)
-							.setAmount(payment)
-							.setReason("refund")
-							.build(EcoToolPlugin.getPlugin()));
-					return;
-				}
-				player.sendMessage("Successfully paid " + toUser.getName());
-				Player onlineTo = toUser.getPlayer();
-				if (onlineTo != null) {
-					onlineTo.sendMessage(
-							player.getName() + " sent you " + currency.formatSymbol(resultTo.getTransaction()
-									.getNewPaymentAmount()));
-					if (!reason.isBlank()) {
-						onlineTo.sendMessage(reason);
+		new IsolatedTransaction(map -> {
+			CompletableFuture<TransactionResult> withdraw =
+					toAccount.withdraw(paymentResult).thenApply(single -> single);
+			CompletableFuture<TransactionResult> deposit =
+					toPlayerAccount.deposit(paymentResult).thenApply(single -> single);
+			return List.of(withdraw, deposit);
+		}, toAccount, toPlayerAccount)
+				.start()
+				.thenAccept(result -> {
+					player.sendMessage("Successfully paid " + toUser.getName());
+					Player onlineTo = toUser.getPlayer();
+					if (onlineTo == null) {
+						return;
 					}
-				}
-			});
-		});
+					Optional<Transaction> opTransaction = result.getTransactions()
+							.parallelStream()
+							.filter(type -> type.getType() == TransactionType.DEPOSIT)
+							.findAny();
+					if (opTransaction.isEmpty()) {
+						return;
+					}
 
-
+					onlineTo.sendMessage(
+							player.getName() + " sent you " + currency.formatSymbol(opTransaction.get()
+									.getNewPaymentAmount()));
+					if (reason.isBlank()) {
+						return;
+					}
+					onlineTo.sendMessage(reason);
+				});
 		return true;
 	}
 }

@@ -17,11 +17,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class PlayerAccountSerializer implements Serializer<EcoPlayerAccount> {
+
+
 	@Override
 	public void serialize(@NotNull YamlConfiguration configuration, @NotNull EcoPlayerAccount value) {
 		value.getBalances()
 				.forEach((currency, amount) -> configuration.set(
-						"balance." + currency.getPlugin() + "." + currency.getKeyName(), amount.doubleValue()));
+						"balance." + currency.getPlugin().getName() + "." + currency.getKeyName(),
+						amount.doubleValue()));
 		configuration.set("id", value.getPlayer().getUniqueId().toString());
 	}
 
@@ -33,10 +36,10 @@ public class PlayerAccountSerializer implements Serializer<EcoPlayerAccount> {
 						.parallelStream()
 						.map(currency -> {
 							double value = configuration.getDouble(
-									"balance." + currency.getPlugin() + "." + currency.getKeyName());
+									"balance." + currency.getPlugin().getName() + "." + currency.getKeyName());
 							return new AbstractMap.SimpleImmutableEntry<>(currency, value);
 						})
-						.filter(entry -> entry.getValue() == 0.0)
+						.filter(entry -> entry.getValue() != 0.0)
 						.collect(Collectors.toMap(AbstractMap.SimpleImmutableEntry::getKey,
 								value -> BigDecimal.valueOf(value.getValue())));
 		String accountId = configuration.getString("id");
