@@ -12,7 +12,8 @@ public enum Permissions {
 	SET_EXCHANGE_CURRENCY("eco.cmd.currency.set.exchange", false),
 	EXCHANGE("eco.cmd.exchange", true),
 	GIVE_ECO("eco.cmd.tools.give", false),
-	PAY("eco.cmd.pay", true);
+	PAY("eco.cmd.pay", true),
+	CREATE_BANK_ACCOUNT("eco.cmd.create.player.bank.self", true);
 
 
 	private final @NotNull String permissionNode;

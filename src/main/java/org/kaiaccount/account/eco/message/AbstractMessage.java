@@ -74,7 +74,7 @@ public abstract class AbstractMessage implements Message {
 		return builder.toString();
 	}
 
-	private <T> String process(MessageArgument<T> argument, Object value) {
+	private <T> @NotNull String process(MessageArgument<T> argument, Object value) {
 		return argument.apply((T) value);
 	}
 

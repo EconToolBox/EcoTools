@@ -23,3 +23,6 @@ commands:
     usage: /pay [account type] <account id> <currency> <amount> [reason]
     aliases:
       - transfer
+  bank:
+    description: Bank meta commands
+    usage: /bank [command]

@@ -1,42 +1,33 @@
 package org.kaiaccount.account.eco.commands.balance;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
 import org.kaiaccount.account.eco.message.Messages;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.eco.utils.CommonUtils;
 import org.kaiaccount.account.inter.currency.Currency;
+import org.kaiaccount.account.inter.type.Account;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
-import org.mose.command.arguments.collection.source.UserArgument;
-import org.mose.command.arguments.operation.OptionalArgument;
-import org.mose.command.arguments.operation.permission.PermissionOrArgument;
 import org.mose.command.context.CommandContext;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckBalanceCommand implements ArgumentCommand {
-
-	public static final CommandArgument<OfflinePlayer> USER = new OptionalArgument<>(new PermissionOrArgument<>(
-			"user",
-			(sender) -> sender.hasPermission(Permissions.BALANCE_OTHER.getPermissionNode()),
-			new UserArgument("user", (user) -> true)));
-
 	@Override
 	public @NotNull List<CommandArgument<?>> getArguments() {
-		return List.of(USER);
+		return Collections.emptyList();
 	}
 
 	@Override
 	public @NotNull String getDescription() {
-		return "Checks the balance of either yourself or another player";
+		return "Check your balance";
 	}
 
 	@Override
@@ -45,24 +36,28 @@ public class CheckBalanceCommand implements ArgumentCommand {
 	}
 
 	@Override
-	public boolean run(CommandContext commandContext, String... strings) {
-		OfflinePlayer player = commandContext.getArgument(this, USER);
-		if (player == null) {
-			if (!(commandContext.getSource() instanceof OfflinePlayer)) {
-				commandContext.getSource().sendMessage("You are required to specify a player");
-				return false;
-			}
-			player = (OfflinePlayer) commandContext.getSource();
+	public boolean hasPermission(CommandSender source) {
+		if (!(source instanceof OfflinePlayer)) {
+			return false;
 		}
-		Map<Currency<?>, BigDecimal> balances = AccountInterface.getManager().getPlayerAccount(player).getBalances();
-		balances.forEach(((currency, balance) -> commandContext.getSource()
+		return ArgumentCommand.super.hasPermission(source);
+	}
+
+	@Override
+	public boolean run(CommandContext commandContext, String... strings) {
+		return Bukkit.dispatchCommand(commandContext.getSource(), "balance player");
+	}
+
+	static boolean displayInfo(@NotNull CommandSender sender, @NotNull Account account) {
+		Map<Currency<?>, BigDecimal> balances = account.getBalances();
+		balances.forEach(((currency, balance) -> sender
 				.sendMessage("  " + currency.formatSymbol(balance))));
 
 		Currency<?> defaultCurrency;
-		try{
+		try {
 			defaultCurrency = AccountInterface.getManager().getDefaultCurrency();
-		}catch (RuntimeException e){
-			commandContext.getSource().sendMessage("Worth cannot be calculated: " + e.getMessage());
+		} catch (RuntimeException e) {
+			sender.sendMessage("Worth cannot be calculated: " + e.getMessage());
 			return true;
 		}
 		if (defaultCurrency.getWorth().isPresent()) {
@@ -76,9 +71,8 @@ public class CheckBalanceCommand implements ArgumentCommand {
 					.collect(Collectors.toSet());
 
 			BigDecimal worth = CommonUtils.sumOf(collection.iterator());
-			String message = Messages.TOTAL_WORTH.getProcessedMessage(commandContext.getSource(), worth);
-
-			commandContext.getSource().sendMessage(message);
+			String message = Messages.TOTAL_WORTH.getProcessedMessage(sender, worth);
+			sender.sendMessage(message);
 		}
 		return true;
 	}

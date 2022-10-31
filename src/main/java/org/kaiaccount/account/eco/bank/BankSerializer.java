@@ -25,7 +25,7 @@ public class BankSerializer implements Serializer<EcoBankAccount> {
 	@Override
 	public void serialize(@NotNull YamlConfiguration configuration, @NotNull EcoBankAccount value) {
 		configuration.set(BANK_NAME, value.getBankAccountName());
-		configuration.set(BANK_OWNER, value.getAccountHolder().getPlayer().getUniqueId());
+		configuration.set(BANK_OWNER, value.getAccountHolder().getPlayer().getUniqueId().toString());
 		Map<UUID, Collection<BankPermission>> accounts = new HashMap<>(value.getAccounts());
 		accounts.remove(value.getAccountHolder().getPlayer().getUniqueId());
 

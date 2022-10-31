@@ -68,6 +68,7 @@ public class EcoToolPlugin extends JavaPlugin {
 		registerCommand("ecotools", BukkitCommands.ECOTOOLS);
 		registerCommand("exchange", BukkitCommands.EXCHANGE);
 		registerCommand("pay", BukkitCommands.PAY);
+		registerCommand("bank", BukkitCommands.BANK);
 	}
 
 	private void registerCommand(@NotNull String command, @NotNull BukkitCommandWrapper wrapper) {
