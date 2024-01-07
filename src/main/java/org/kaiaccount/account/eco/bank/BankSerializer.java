@@ -7,8 +7,8 @@ import org.kaiaccount.AccountInterface;
 import org.kaiaccount.account.eco.EcoToolPlugin;
 import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.io.Serializer;
-import org.kaiaccount.account.inter.type.bank.BankPermission;
-import org.kaiaccount.account.inter.type.bank.player.PlayerBankAccountBuilder;
+import org.kaiaccount.account.inter.type.named.bank.BankPermission;
+import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccountBuilder;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 
 import java.io.IOException;

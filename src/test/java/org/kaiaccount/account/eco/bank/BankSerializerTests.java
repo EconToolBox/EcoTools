@@ -15,7 +15,7 @@ import org.kaiaccount.account.eco.FakePlayerAccount;
 import org.kaiaccount.account.eco.currency.EcoCurrency;
 import org.kaiaccount.account.inter.currency.Currency;
 import org.kaiaccount.account.inter.currency.CurrencyBuilder;
-import org.kaiaccount.account.inter.type.bank.player.PlayerBankAccountBuilder;
+import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccountBuilder;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;

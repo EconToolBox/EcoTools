@@ -36,7 +36,7 @@ public class EcoPlayerAccount extends AbstractPlayerAccount<EcoPlayerAccount>
 	}
 
 	@Override
-	public File getFile() {
+	public @NotNull File getFile() {
 		return new File("plugins/eco/players/"
 				+ EcoToolPlugin.getPlugin().getName()
 				+ "/"
