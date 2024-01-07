@@ -1,0 +1,3 @@
+[submodule "AccountInterface"]
+	path = AccountInterface
+	url = https://github.com/EconToolBox/AccountInterface.git

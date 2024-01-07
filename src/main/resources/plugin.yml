@@ -1,9 +1,10 @@
 name: EcoTools
-version: 0.0.1-Pre
-api-version: 1.15
+version: 0.0.2-Pre
+api-version: '1.20'
 main: org.kaiaccount.account.eco.EcoToolPlugin
+load: STARTUP
 depend:
-  - AccountInterface
+  - Vault
 commands:
   currency:
     description: All commands to do with currencies
