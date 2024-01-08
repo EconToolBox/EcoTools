@@ -16,8 +16,8 @@ import java.util.Optional;
 
 public class CheckNamedAccountBalanceCommand implements ArgumentCommand {
 
-    public static final CommandArgument<String> NAMED = new ExactArgument("named");
-    public static final CommandArgument<NamedAccount> NAMED_ACCOUNT = new NamedAccountArgument("account", (cmdContext, argContext) -> AccountInterface.getManager().getNamedAccounts());
+    public static final CommandArgument<String> NAMED = new ExactArgument("account");
+    public static final CommandArgument<NamedAccount> NAMED_ACCOUNT = new NamedAccountArgument("namedAccount", (cmdContext, argContext) -> AccountInterface.getManager().getNamedAccounts());
 
     @Override
     public @NotNull List<CommandArgument<?>> getArguments() {
