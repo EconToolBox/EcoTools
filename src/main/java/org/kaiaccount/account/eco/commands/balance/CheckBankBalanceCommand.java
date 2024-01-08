@@ -3,7 +3,7 @@ package org.kaiaccount.account.eco.commands.balance;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
-import org.kaiaccount.account.eco.commands.argument.bank.PlayerBankArgument;
+import org.kaiaccount.account.eco.commands.argument.account.PlayerBankArgument;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccount;
 import org.mose.command.ArgumentCommand;

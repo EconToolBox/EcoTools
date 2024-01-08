@@ -1,4 +1,4 @@
-package org.kaiaccount.account.eco.account;
+package org.kaiaccount.account.eco.account.player;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

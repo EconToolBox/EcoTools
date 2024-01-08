@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
 import org.kaiaccount.account.eco.EcoToolPlugin;
-import org.kaiaccount.account.eco.commands.argument.account.PlayerBankArgument;
+import org.kaiaccount.account.eco.commands.argument.account.NamedAccountArgument;
 import org.kaiaccount.account.eco.commands.argument.currency.PaymentArgument;
 import org.kaiaccount.account.eco.message.Messages;
 import org.kaiaccount.account.eco.message.messages.error.SourceOnlyCommandMessage;
@@ -19,7 +19,7 @@ import org.kaiaccount.account.inter.transfer.result.TransactionResult;
 import org.kaiaccount.account.inter.transfer.result.failed.FailedTransactionResult;
 import org.kaiaccount.account.inter.type.AccountType;
 import org.kaiaccount.account.inter.type.IsolatedAccount;
-import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccount;
+import org.kaiaccount.account.inter.type.named.NamedAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
@@ -31,21 +31,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class PayBankCommand implements ArgumentCommand {
+public class PayNamedCommand implements ArgumentCommand {
 
-    public static final CommandArgument<String> BANK = new ExactArgument("bank");
-    public static final CommandArgument<PlayerBankAccount> BANK_ACCOUNT =
-            PlayerBankArgument.allPlayerBanks("account");
+    public static final CommandArgument<String> NAMED = new ExactArgument("account");
+    public static final CommandArgument<NamedAccount> NAMED_ACCOUNT = new NamedAccountArgument("namedAccount", (cmdContext, argContext) -> AccountInterface.getManager().getNamedAccounts());
     public static final PaymentArgument VALUE = new PaymentArgument("payment", true);
 
     @Override
     public @NotNull List<CommandArgument<?>> getArguments() {
-        return Arrays.asList(BANK, BANK_ACCOUNT, VALUE);
+        return Arrays.asList(NAMED, NAMED_ACCOUNT, VALUE);
     }
 
     @Override
     public @NotNull String getDescription() {
-        return "pay a bank account";
+        return "pay a named account";
     }
 
     @Override
@@ -68,11 +67,11 @@ public class PayBankCommand implements ArgumentCommand {
             commandContext.getSource().sendMessage(message);
             return true;
         }
-        PlayerBankAccount bankAccount = commandContext.getArgument(this, BANK_ACCOUNT);
-        if (!(bankAccount instanceof AccountType bankAccountType)) {
+        NamedAccount namedAccount = commandContext.getArgument(this, NAMED_ACCOUNT);
+        if (!(namedAccount instanceof AccountType namedAccountType)) {
             commandContext.getSource()
                     .sendMessage(
-                            "technical error: BankAccount is not of the correct type. No money has been transferred, "
+                            "technical error: NamedAccount is not of the correct type. No money has been transferred, "
                                     + "cancelling payment");
             return true;
         }
@@ -88,7 +87,7 @@ public class PayBankCommand implements ArgumentCommand {
 
         CompletableFuture<TransactionResult> result = new IsolatedTransaction(accounts -> {
             IsolatedAccount isolatedPlayer = accounts.get(playerAccount);
-            IsolatedAccount isolatedBank = accounts.get(bankAccount);
+            IsolatedAccount isolatedBank = accounts.get(namedAccount);
 
             Payment withdrawPayment = value.build(EcoToolPlugin.getPlugin());
             Payment depositPayment = value.setFrom(playerAccount).build(EcoToolPlugin.getPlugin());
@@ -97,13 +96,13 @@ public class PayBankCommand implements ArgumentCommand {
             CompletableFuture<SingleTransactionResult> deposit = isolatedBank.deposit(depositPayment);
 
             return List.of(withdraw, deposit);
-        }, playerAccountType, bankAccountType).start();
+        }, playerAccountType, namedAccountType).start();
 
         result.thenAccept(transactionResult -> {
             if (transactionResult instanceof FailedTransactionResult failed) {
                 commandContext.getSource()
                         .sendMessage(
-                                "Failed to pay bank. No money has been transferred, cancelling transaction: Failed "
+                                "Failed to pay account. No money has been transferred, cancelling transaction: Failed "
                                         + "for "
                                         + failed.getReason());
                 return;

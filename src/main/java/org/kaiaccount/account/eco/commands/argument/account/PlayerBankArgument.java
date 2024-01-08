@@ -1,4 +1,4 @@
-package org.kaiaccount.account.eco.commands.argument.bank;
+package org.kaiaccount.account.eco.commands.argument.account;
 
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;

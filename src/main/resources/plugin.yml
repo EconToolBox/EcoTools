@@ -27,3 +27,6 @@ commands:
   bank:
     description: Bank meta commands
     usage: /bank [command]
+  account:
+    description: Account admin commands
+    usage: /account [command]
