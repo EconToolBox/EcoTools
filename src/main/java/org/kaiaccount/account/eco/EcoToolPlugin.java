@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.kaiaccount.AccountInterface;
 import org.kaiaccount.AccountInterfaceManager;
-import org.kaiaccount.account.eco.account.EcoPlayerAccount;
+import org.kaiaccount.account.eco.account.player.EcoPlayerAccount;
 import org.kaiaccount.account.eco.commands.BukkitCommands;
 import org.kaiaccount.account.eco.io.EcoSerializers;
 import org.kaiaccount.account.inter.currency.Currency;
@@ -55,6 +55,7 @@ public class EcoToolPlugin extends JavaPlugin {
                 AccountInterface.getManager().getCurrencies().iterator().next().setDefault(true);
             }
         }
+        loadNamedAccounts();
         loadPlayerAccounts();
         loadBankAccounts();
         registerCommand("balance", BukkitCommands.BALANCE);
@@ -63,6 +64,7 @@ public class EcoToolPlugin extends JavaPlugin {
         registerCommand("exchange", BukkitCommands.EXCHANGE);
         registerCommand("pay", BukkitCommands.PAY);
         registerCommand("bank", BukkitCommands.BANK);
+        registerCommand("account", BukkitCommands.ACCOUNT);
 
 
         Collection<RegisteredServiceProvider<Economy>> rsp = getServer().getServicesManager().getRegistrations(Economy.class);
@@ -90,6 +92,11 @@ public class EcoToolPlugin extends JavaPlugin {
         File folder = new File("plugins/eco/players/" + this.getName() + "/");
         return load(folder, EcoSerializers.PLAYER,
                 (player) -> AccountInterface.getManager().registerPlayerAccount(player));
+    }
+
+    private boolean loadNamedAccounts() {
+        File folder = new File("plugins/eco/named/" + this.getName() + "/");
+        return load(folder, EcoSerializers.NAMED_ACCOUNT, (account) -> AccountInterface.getManager().registerNamedAccount(account));
     }
 
     public EcoPlayerAccount loadPlayerAccount(@NotNull UUID player) throws IllegalStateException {

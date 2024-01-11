@@ -36,7 +36,7 @@ public class EcoCurrency extends AbstractCurrency<EcoCurrency> {
 	}
 
 	@Override
-	public File getFile() {
+	public @NotNull File getFile() {
 		return new File("plugins/eco/currencies/" + this.getPlugin().getName() + "/" + this.getKeyName() + ".yml");
 	}
 }
