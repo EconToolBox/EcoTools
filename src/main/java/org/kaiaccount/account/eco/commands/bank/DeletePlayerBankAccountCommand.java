@@ -45,7 +45,7 @@ public class DeletePlayerBankAccountCommand implements ArgumentCommand {
             return true;
         }
         PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
-        if (!account.getBank(newBankName).isPresent()) {
+        if (!account.getBank(bankName).isPresent()) {
             commandContext.getSource().sendMessage("Bank does not exist");
             return true;
         }
