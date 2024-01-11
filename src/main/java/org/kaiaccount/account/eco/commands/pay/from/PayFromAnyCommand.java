@@ -11,6 +11,7 @@ import org.kaiaccount.account.inter.transfer.result.SingleTransactionResult;
 import org.kaiaccount.account.inter.transfer.result.failed.FailedTransactionResult;
 import org.kaiaccount.account.inter.type.Account;
 import org.kaiaccount.account.inter.type.AccountType;
+import org.kaiaccount.account.inter.type.named.NamedAccountLike;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 import org.mose.command.arguments.operation.ExactArgument;
@@ -60,8 +61,12 @@ public class PayFromAnyCommand implements ArgumentCommand {
         PaymentBuilder payment = commandContext.getArgument(this, PAYMENT);
 
         new IsolatedTransaction((isolatedFrom, isolatedTo) -> {
-            CompletableFuture<SingleTransactionResult> deposit = isolatedTo.deposit(payment.setFrom(from).build(EcoToolPlugin.getPlugin()));
-            CompletableFuture<SingleTransactionResult> withdraw = isolatedFrom.withdraw(payment.build(EcoToolPlugin.getPlugin()));
+            CompletableFuture<SingleTransactionResult> deposit = isolatedTo
+                    .deposit(payment
+                            .setFrom(from instanceof NamedAccountLike ? (NamedAccountLike) from : null)
+                            .build(EcoToolPlugin.getPlugin()));
+            CompletableFuture<SingleTransactionResult> withdraw = isolatedFrom
+                    .withdraw(payment.build(EcoToolPlugin.getPlugin()));
             return List.of(deposit, withdraw);
         }, fromType, toType)
                 .start()

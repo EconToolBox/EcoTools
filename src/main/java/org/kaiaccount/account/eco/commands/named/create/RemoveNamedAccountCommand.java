@@ -18,6 +18,7 @@ import org.kaiaccount.account.inter.type.Account;
 import org.kaiaccount.account.inter.type.AccountType;
 import org.kaiaccount.account.inter.type.IsolatedAccount;
 import org.kaiaccount.account.inter.type.named.NamedAccount;
+import org.kaiaccount.account.inter.type.named.NamedAccountLike;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
@@ -117,7 +118,7 @@ public class RemoveNamedAccountCommand implements ArgumentCommand {
                                 .setAmount(0)
                                 .setPriority(true)
                                 .setReason("Account closure")
-                                .setFrom(goingTo)
+                                .setFrom(goingTo instanceof NamedAccountLike ? (NamedAccountLike) goingTo : null)
                                 .build(EcoToolPlugin.getPlugin())));
                     }
                     AccountInterface.getManager().deregisterNamedAccount(account);

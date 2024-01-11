@@ -16,6 +16,7 @@ import org.kaiaccount.account.inter.transfer.payment.Payment;
 import org.kaiaccount.account.inter.transfer.payment.PaymentBuilder;
 import org.kaiaccount.account.inter.transfer.result.TransactionResult;
 import org.kaiaccount.account.inter.type.Account;
+import org.kaiaccount.account.inter.type.named.NamedAccountLike;
 import org.kaiaccount.account.inter.type.player.AbstractPlayerAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.ArgumentCommand;
@@ -99,7 +100,7 @@ public class PayPlayerCommand implements ArgumentCommand {
 			return false;
 		}
 		Payment paymentResult =
-				new PaymentBuilder().setAmount(payment).setCurrency(currency).setFrom(account).setReason(reason).build(
+				new PaymentBuilder().setAmount(payment).setCurrency(currency).setFrom(toAccount).setReason(reason).build(
 						EcoToolPlugin.getPlugin());
 		new IsolatedTransaction(map -> {
 			CompletableFuture<TransactionResult> withdraw =
