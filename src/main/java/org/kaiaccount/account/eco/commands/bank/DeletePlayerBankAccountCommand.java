@@ -7,7 +7,6 @@ import org.kaiaccount.account.eco.message.Messages;
 import org.kaiaccount.account.eco.message.messages.error.SourceOnlyCommandMessage;
 import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
-import org.kaiaccount.account.eco.permission.Permissions;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 import org.mose.command.arguments.operation.ExactArgument;
@@ -17,9 +16,9 @@ import org.mose.command.context.CommandContext;
 import java.util.List;
 import java.util.Optional;
 
-public class CreatePlayerBankAccountCommand implements ArgumentCommand {
+public class DeletePlayerBankAccountCommand implements ArgumentCommand {
 
-    public static final ExactArgument CREATE = new ExactArgument("create");
+    public static final ExactArgument CREATE = new ExactArgument("close");
     public static final StringArgument NAME = new StringArgument("name");
 
     @Override
@@ -29,28 +28,28 @@ public class CreatePlayerBankAccountCommand implements ArgumentCommand {
 
     @Override
     public @NotNull String getDescription() {
-        return "Creates a new bank account";
+        return "Deletes a bank account";
     }
 
     @Override
     public @NotNull Optional<String> getPermissionNode() {
-        return Optional.of(Permissions.CREATE_BANK_ACCOUNT.getPermissionNode());
+        return Optional.empty();
     }
 
     @Override
     public boolean run(CommandContext commandContext, String... strings) {
-        String newBankName = commandContext.getArgument(this, NAME);
+        String bankName = commandContext.getArgument(this, NAME);
         if (!(commandContext.getSource() instanceof OfflinePlayer player)) {
             commandContext.getSource()
                     .sendMessage(Messages.SOURCE_ONLY.getProcessedMessage(SourceOnlyCommandMessage.PLAYER_SOURCE));
             return true;
         }
         PlayerAccount<?> account = AccountInterface.getManager().getPlayerAccount(player);
-        if (account.getBank(newBankName).isPresent()) {
-            commandContext.getSource().sendMessage("Bank already by that name");
+        if (!account.getBank(newBankName).isPresent()) {
+            commandContext.getSource().sendMessage("Bank does not exist");
             return true;
         }
-        PlayerBankAccount bankAccount = account.createBankAccount(newBankName);
+        PlayerBankAccount bankAccount = account.deleteBankAccount(bankName);
         commandContext.getSource().sendMessage("Created " + bankAccount.getAccountName());
         return true;
     }
