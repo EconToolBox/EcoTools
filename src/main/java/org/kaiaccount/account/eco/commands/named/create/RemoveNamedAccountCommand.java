@@ -7,7 +7,6 @@ import org.kaiaccount.account.eco.EcoToolPlugin;
 import org.kaiaccount.account.eco.account.named.EcoNamedAccount;
 import org.kaiaccount.account.eco.commands.argument.account.AccountArgument;
 import org.kaiaccount.account.eco.commands.argument.account.NamedAccountArgument;
-import org.kaiaccount.account.eco.commands.argument.account.PlayerBankArgument;
 import org.kaiaccount.account.eco.permission.Permissions;
 import org.kaiaccount.account.inter.transfer.IsolatedTransaction;
 import org.kaiaccount.account.inter.transfer.payment.Payment;
@@ -22,13 +21,13 @@ import org.kaiaccount.account.inter.type.named.NamedAccountLike;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.arguments.collection.source.UserArgument;
+import org.mose.command.ParseCommandArgument;
 import org.mose.command.arguments.operation.ExactArgument;
-import org.mose.command.arguments.operation.MappedArgumentWrapper;
 import org.mose.command.arguments.operation.OptionalArgument;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,20 +37,26 @@ public class RemoveNamedAccountCommand implements ArgumentCommand {
     public static final CommandArgument<NamedAccount> NAME = new NamedAccountArgument("name", (cmdContext, argContext) -> AccountInterface
             .getManager()
             .getNamedAccounts());
-    public static final CommandArgument<Account> INTO = new OptionalArgument<Account>(
-            new AccountArgument<>("to",
-                    new NamedAccountArgument("", (cmdContext, argContext) -> AccountInterface
-                            .getManager()
-                            .getNamedAccounts()),
-                    PlayerBankArgument.allPlayerBanks(""),
-                    new MappedArgumentWrapper<>(new UserArgument("", p -> true), user -> AccountInterface
-                            .getManager()
-                            .getPlayerAccount(user))), ((commandContext, commandArgumentContext) -> {
-        if (commandContext.getSource() instanceof Player player) {
-            return CommandArgumentResult.from(commandArgumentContext, 0, AccountInterface.getManager().getPlayerAccount(player));
-        }
-        throw new IOException("a account must be specified");
-    }));
+
+    public static final CommandArgument<Account> INTO;
+
+    static {
+        AccountArgument<Account> accountArgument = AccountArgument.allAccounts("to");
+        var selfAccount = new ParseCommandArgument<Account>() {
+            @Override
+            public @NotNull CommandArgumentResult<Account> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+                if (context.getSource() instanceof Player player) {
+                    return CommandArgumentResult.from(argument, 0, AccountInterface.getManager().getPlayerAccount(player));
+                }
+                throw new ArgumentException("a account must be specified");
+            }
+        };
+
+        INTO = new OptionalArgument<>(
+                accountArgument,
+                selfAccount
+        );
+    }
 
 
     @Override

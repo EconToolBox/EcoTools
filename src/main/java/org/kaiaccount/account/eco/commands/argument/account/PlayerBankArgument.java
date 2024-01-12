@@ -7,10 +7,10 @@ import org.kaiaccount.account.inter.type.named.bank.player.PlayerBankAccount;
 import org.kaiaccount.account.inter.type.player.PlayerAccount;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
 public class PlayerBankArgument implements CommandArgument<PlayerBankAccount> {
 
     private final String id;
-    private final BiFunction<CommandContext, CommandArgumentContext<PlayerBankAccount>,
+    private final BiFunction<CommandContext, ArgumentContext,
             Collection<PlayerBankAccount>>
             function;
 
     public PlayerBankArgument(@NotNull String id,
-                              BiFunction<CommandContext, CommandArgumentContext<PlayerBankAccount>, Collection<PlayerBankAccount>> function) {
+                              BiFunction<CommandContext, ArgumentContext, Collection<PlayerBankAccount>> function) {
         this.id = id;
         this.function = function;
     }
@@ -56,7 +56,7 @@ public class PlayerBankArgument implements CommandArgument<PlayerBankAccount> {
 
     @Override
     public @NotNull CommandArgumentResult<PlayerBankAccount> parse(@NotNull CommandContext commandContext,
-                                                                   @NotNull CommandArgumentContext<PlayerBankAccount> commandArgumentContext) throws IOException {
+                                                                   @NotNull ArgumentContext commandArgumentContext) throws ArgumentException {
         Collection<PlayerBankAccount> banks = this.function.apply(commandContext, commandArgumentContext);
         String peek = commandArgumentContext.getFocusArgument().toLowerCase();
         String playerOwner = null;
@@ -86,14 +86,14 @@ public class PlayerBankArgument implements CommandArgument<PlayerBankAccount> {
                 })
                 .findAny();
         if (opBank.isEmpty()) {
-            throw new IOException("No bank by that name");
+            throw new ArgumentException("No bank by that name");
         }
         return CommandArgumentResult.from(commandArgumentContext, opBank.get());
     }
 
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext,
-                                               @NotNull CommandArgumentContext<PlayerBankAccount> commandArgumentContext) {
+                                               @NotNull ArgumentContext commandArgumentContext) {
         Collection<PlayerBankAccount> banks = this.function.apply(commandContext, commandArgumentContext);
         String peek = commandArgumentContext.getFocusArgument().toLowerCase();
         return banks.parallelStream()
