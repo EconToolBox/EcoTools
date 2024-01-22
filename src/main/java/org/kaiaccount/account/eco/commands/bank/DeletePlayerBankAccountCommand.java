@@ -67,7 +67,7 @@ public class DeletePlayerBankAccountCommand implements ArgumentCommand {
             commandContext.getSource().sendMessage("Bank account deletion failed");
             return true;
         }
-		account.deleteBankAccount(bank, EcoToolPlugin.getPlugin());
+		account.deleteBankAccount(bank);
 
         commandContext.getSource().sendMessage("Deleted " + bank.getAccountName());
         return true;
