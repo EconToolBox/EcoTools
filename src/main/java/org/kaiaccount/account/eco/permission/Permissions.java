@@ -15,7 +15,8 @@ public enum Permissions {
     PAY("eco.cmd.pay.self", true),
     PAY_FROM("eco.cmd.pay.from", false),
     CREATE_BANK_ACCOUNT("eco.cmd.create.player.bank.self", true),
-    CREATE_NAMED_ACCOUNT("eco.cmd.create.named", true);
+    CREATE_NAMED_ACCOUNT("eco.cmd.create.named", true),
+	DELETE_BANK_OTHER("eco.cmd.delete.player.bank.other", false);
 
 
     private final @NotNull String permissionNode;
