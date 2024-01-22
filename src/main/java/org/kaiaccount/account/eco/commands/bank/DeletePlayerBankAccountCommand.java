@@ -54,10 +54,14 @@ public class DeletePlayerBankAccountCommand implements ArgumentCommand {
             return true;
         }
         PlayerAccount<?> account = bank.getAccountHolder();
-		account.deposit(bank.getBalance());
-        for (UUID acc : bank.getAccounts().keySet()) {
-            bank.removeAccount(acc);
-        }
+
+        Payment payment = new PaymentBuilder()
+        .setAmount(account.getBalance(AccountInterface.getManager().getDefaultCurrency()))
+        .setCurrency(AccountInterface.getManager().getDefaultCurrency())
+        .build(EcoToolPlugin.getPlugin());
+
+        this.deposit(payment);
+		account.deleteBankAccount(bank, EcoToolPlugin.getPlugin());
 
         commandContext.getSource().sendMessage("deleted " + bank.getAccountName());
         return true;
