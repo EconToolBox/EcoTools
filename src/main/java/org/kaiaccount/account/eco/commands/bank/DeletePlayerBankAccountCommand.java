@@ -54,16 +54,22 @@ public class DeletePlayerBankAccountCommand implements ArgumentCommand {
             return true;
         }
         PlayerAccount<?> account = bank.getAccountHolder();
-
+        BigDecimal oldBalance = account.getBalance();
         Payment payment = new PaymentBuilder()
         .setAmount(account.getBalance(AccountInterface.getManager().getDefaultCurrency()))
         .setCurrency(AccountInterface.getManager().getDefaultCurrency())
         .build(EcoToolPlugin.getPlugin());
 
         this.deposit(payment);
+        BigDecimal newBalance = account.getBalance();
+
+        if (newBalance.compareTo(oldBalance) == 0) {
+            commandContext.getSource().sendMessage("Bank account deletion failed");
+            return true;
+        }
 		account.deleteBankAccount(bank, EcoToolPlugin.getPlugin());
 
-        commandContext.getSource().sendMessage("deleted " + bank.getAccountName());
+        commandContext.getSource().sendMessage("Deleted " + bank.getAccountName());
         return true;
     }
 }
